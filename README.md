@@ -1,11 +1,12 @@
-TODO
-1 Make the drop down buttons work - DONE 
-2 Make individual pages for each news and show content and navigate for more content - DONE
-3 Should work for each category and country - DONE
-4 Improve Frontend 
-5 Add Toast and make Circular Progress Bar better
-6 Hide my apikey - DONE
-7 Infinite Scrolling for news
+# TODO
+
+### 1 Make the drop down buttons work - DONE 
+### 2 Make individual pages for each news and show content and navigate for more content - DONE
+### 3 Should work for each category and country - DONE
+### 4 Improve Frontend 
+### 5 Add Toast and make Circular Progress Bar better
+### 6 Hide my apikey - DONE
+### 7 Infinite Scrolling for news
 
 
 # newsapp
