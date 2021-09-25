@@ -1,5 +1,8 @@
+import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:newsapp/models/news.dart';
+import 'package:newsapp/utils/constants.dart';
 
 class NewsPage extends StatelessWidget {
   const NewsPage({
@@ -26,76 +29,127 @@ class NewsPage extends StatelessWidget {
           },
         ),
       ),
-      backgroundColor: Colors.teal[800],
-      body: Center(
-        child: SingleChildScrollView(
-          child: SafeArea(
+      backgroundColor: colorBlack,
+      body: Stack(children: [
+        Center(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                currentArticle.urlToImage == "Empty"
-                    ? Image.asset(
-                        "./assets/images/image_loader.gif",
-                      )
-                    : Image.network(currentArticle.urlToImage), //Image
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  currentArticle.title,
-                  style: const TextStyle(
-                    color: Colors.amber,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                  ),
-                ), //Title
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  currentArticle.publishedAt,
-                  style: TextStyle(color: Colors.amber),
-                ), //Date
-                Text(
-                  "By " + currentArticle.author!,
-                  style: TextStyle(color: Colors.amber),
-                ), //author
-                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+                  child: currentArticle.urlToImage == "Empty"
+                      ? imageFromAssets("./assets/images/image_not_found.png")
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: Image.network(
+                            currentArticle.urlToImage,
+                            // color: colorText,
+                            height: 350,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return imageFromAssets(
+                                  "./assets/images/image_loader.gif");
+                            },
+                            // width: window.physicalSize.width,
+                            fit: BoxFit.fill,
+                          )),
+                ), //
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        currentArticle.title,
+                        style: const TextStyle(
+                          color: colorText,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                        ),
+                      ), //Title
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: [
+                          const Text(
+                            "Published At : ",
+                            style: TextStyle(
+                                color: colorText, fontWeight: FontWeight.w900),
+                          ),
+                          Text(
+                            currentArticle.publishedAt,
+                            style: const TextStyle(
+                              color: colorText,
+                            ),
+                          ),
+                        ],
+                      ), //Date
+                      Row(
+                        children: [
+                          const Text(
+                            "Source : ",
+                            style: TextStyle(
+                                color: colorText, fontWeight: FontWeight.w900),
+                          ),
+                          Text(
+                            "By " + currentArticle.author!,
+                            style: const TextStyle(color: colorText),
+                          ),
+                        ],
+                      ), //author
+                      Divider(
+                        color: colorTeal,
+                        indent: 2,
+                      ),
 
-                Text(
-                  currentArticle.description,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.amber,
-                      fontSize: 16),
-                ), //Description
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  filter(currentArticle.content!),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Colors.amber,
+                      Text(
+                        currentArticle.description,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: colorText,
+                            fontSize: 16),
+                      ), //Description
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        filter(currentArticle.content!),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          color: colorText,
+                        ),
+                      ), //Content
+                      const SizedBox(
+                        height: 8,
+                      ),
+                    ],
                   ),
-                ), //Content
-                const SizedBox(
-                  height: 8,
-                ),
-                ElevatedButton(
-                  child: const Text("Button will work soon"),
-                  onPressed: () {
-                    // go to newsUrl
-                    //go to news
-                  },
                 ),
               ],
             ),
           ),
         ),
-      ),
+        Positioned(
+          bottom: 20,
+          left: 165,
+          child: GestureDetector(
+            onTap: () {
+              // print("Tapped");
+            },
+            child: Icon(
+              CupertinoIcons.arrow_up_to_line,
+              color: colorTeal,
+              size: 50,
+            ),
+          ),
+        )
+      ]),
     );
   }
 
@@ -109,5 +163,16 @@ class NewsPage extends StatelessWidget {
       }
     }
     return afterContent;
+  }
+
+  Widget imageFromAssets(String source) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Image.asset(
+        source,
+        fit: BoxFit.fill,
+        height: 350,
+      ),
+    );
   }
 }

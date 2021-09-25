@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import './strings/strings.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
-Future main()async{
+Future main() async {
   await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: language.appName,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
       home: const MyHomePage(title: "Top Headlines"),
     );

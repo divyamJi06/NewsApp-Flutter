@@ -1,6 +1,12 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:newsapp/controllers/news_controller.dart';
+import 'package:newsapp/utils/constants.dart';
 import 'package:newsapp/views/newspage.dart';
 import '../models/news.dart';
 import '../strings/strings.dart';
@@ -21,7 +27,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String category = "sports";
   var page = 1;
   var pageCount = 20;
-  // String url = "https://newsapi.org/v2/top-headlines";
   String country = "in";
   String link = "Read More";
   List<String> categories = [
@@ -101,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: futureResult(),
-      backgroundColor: Colors.grey,
+      backgroundColor: colorBlack,
     );
   }
 
@@ -112,9 +117,17 @@ class _MyHomePageState extends State<MyHomePage> {
         if (snapshot.hasData) {
           return listTypeView(snapshot.data!.articles);
         } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
+          return const Center(
+              child: Padding(
+            padding: EdgeInsets.all(18.0),
+            child: Text(
+              "Could Not get data from server , Please check your Internet Connection",
+              style: TextStyle(
+                  color: colorText, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ));
         }
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -125,30 +138,20 @@ class _MyHomePageState extends State<MyHomePage> {
       itemCount: newsList.length,
       itemBuilder: (context, index) {
         return Card(
-          child: ListTile(
-            title: Text(newsList[index].title),
-            subtitle: Text(newsList[index].description),
-            leading: CircleAvatar(
-                child: newsList[index].urlToImage == "Empty"
-                    ? Text(newsList[index].title[0].toString())
-                    : Image.network(newsList[index].urlToImage)),
-            trailing: Text(link),
-            isThreeLine: true,
-            tileColor: Colors.tealAccent,
-            contentPadding: const EdgeInsets.all(8),
-            // shape: ShapeBorder.lerp(a, b, t),
-            horizontalTitleGap: 20,
-            minVerticalPadding: 15,
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return NewsPage(
-                  articles: articles,
-                  index: index,
-                );
-              }));
-            },
-          ),
-        );
+            color: colorBG,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return NewsPage(
+                    articles: articles,
+                    index: index,
+                  );
+                }));
+              },
+              child: NewsElement(
+                  imageUrl: newsList[index].urlToImage,
+                  title: newsList[index].title),
+            ));
       },
     );
   }
@@ -163,4 +166,63 @@ class _MyHomePageState extends State<MyHomePage> {
   //       backgroundColor: Colors.red,
   //       textColor: Colors.yellow);
   // }
+}
+
+class NewsElement extends StatelessWidget {
+  const NewsElement({Key? key, required this.imageUrl, required this.title})
+      : super(key: key);
+
+  final String imageUrl;
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 10,
+      height: 100,
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: imageUrl == "Empty"
+                ? imageFromAssets("./assets/images/image_not_found.png")
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      imageUrl,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return imageFromAssets(
+                            "./assets/images/image_loader.gif");
+                      },
+                      fit: BoxFit.fill,
+                      height: 70,
+                      width: 100,
+                    ),
+                  ),
+          ),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                  color: colorText, fontWeight: FontWeight.bold),
+            ),
+          ))
+        ],
+      ),
+    );
+  }
+
+  Widget imageFromAssets(String source) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Image.asset(
+        source,
+        fit: BoxFit.fill,
+        height: 70,
+        width: 100,
+      ),
+    );
+  }
 }
