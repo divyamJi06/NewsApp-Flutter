@@ -4,13 +4,14 @@
 ### 2 Make individual pages for each news and show content and navigate for more content - DONE
 ### 3 Should work for each category and country - DONE
 ### 4 Improve Frontend - DONE
-### 5 Add Toast and make Circular Progress Bar better
+### 5 Add Toast and make Circular Progress Bar better - DONE
 ### 6 Hide my apikey - DONE
-### 7 Infinite Scrolling for news
+### 7 Infinite Scrolling for news - HALF DONE
 ### 8 Add a Search Bar
 ### 9 Add Hero to Image
 ### 10 Upgrade the AppBar in both pages
 ### 11 Make a custom dropdownlist for countries and categories
+### 12 Add custom_refresh_indicator to customised App Bar instead of Linear Progress Bar
 
 
 # newsapp

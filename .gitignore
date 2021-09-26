@@ -50,3 +50,4 @@ app.*.map.json
 # *auth/secret.json
 *.env
 assets/
+myReadMe.txt

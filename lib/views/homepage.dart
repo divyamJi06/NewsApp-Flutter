@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -22,11 +20,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late Future<News> futureNews;
-  late List<Articles> articles;
+  List<Articles> articles = [];
+  // ignore: prefer_typing_uninitialized_variables
   late var apiKey;
   String category = "sports";
   var page = 1;
-  var pageCount = 20;
+  var pageUpdate = 1;
+  var totalResults = 0;
+  var pageSize = 20;
   String country = "in";
   String link = "Read More";
   List<String> categories = [
@@ -52,12 +53,29 @@ class _MyHomePageState extends State<MyHomePage> {
   };
   LanguageIn languageIn = LanguageIn();
   GetNews getNews = GetNews();
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
-    apiKey = dotenv.env["NEWS_API_KEY"];
-    futureNews = getNews.fetchNews(category, country, apiKey, page, pageCount);
+    apiKey = dotenv.env["NEWS_API_KEY2"];
+    futureNews = getNews.fetchNews(category, country, apiKey, page, pageSize);
+    _scrollController.addListener(() {
+      if (_scrollController.position.atEdge) {
+        if (_scrollController.position.pixels == 0) {
+        } else {
+          if (page * pageSize < totalResults) {
+            updateArticles();
+          }
+        }
+      }
+    });
   }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   _scrollController.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -65,15 +83,26 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // ignore: prefer_const_constructors
         title: Text(languageIn.appHome),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(6.0),
+          child: LinearProgressIndicator(
+            // backgroundColor: colorBlack,
+            valueColor: AlwaysStoppedAnimation<Color>(colorBlack),
+            value: 0.5,
+          ),
+        ),
+
         actions: [
           DropdownButton<String>(
             value: category,
             onChanged: (var newValue) {
               // showToast();
               setState(() {
+                articles = [];
+                page = 1;
                 category = newValue!;
                 futureNews = getNews.fetchNews(
-                    category, country, apiKey, page, pageCount);
+                    category, country, apiKey, page, pageSize);
 
                 futureResult();
               });
@@ -90,8 +119,10 @@ class _MyHomePageState extends State<MyHomePage> {
             onChanged: (var newValue) {
               setState(() {
                 country = newValue!;
+                page = 1;
+                articles = [];
                 futureNews = getNews.fetchNews(
-                    category, country, apiKey, page, pageCount);
+                    category, country, apiKey, page, pageSize);
                 futureResult();
               });
             },
@@ -106,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: futureResult(),
-      backgroundColor: colorBlack,
+      backgroundColor: colorBrown,
     );
   }
 
@@ -115,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
       future: futureNews,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          totalResults = snapshot.data!.totalResults;
           return listTypeView(snapshot.data!.articles);
         } else if (snapshot.hasError) {
           return const Center(
@@ -133,12 +165,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget listTypeView(var newsList) {
+    // articles.addAll(newsList);
     articles = newsList;
     return ListView.builder(
-      itemCount: newsList.length,
+      controller: _scrollController,
+      itemCount: articles.length,
       itemBuilder: (context, index) {
         return Card(
-            color: colorBG,
+            color: colorBlack,
             child: GestureDetector(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -149,8 +183,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }));
               },
               child: NewsElement(
-                  imageUrl: newsList[index].urlToImage,
-                  title: newsList[index].title),
+                  imageUrl: articles[index].urlToImage,
+                  title: articles[index].title),
             ));
       },
     );
@@ -166,6 +200,14 @@ class _MyHomePageState extends State<MyHomePage> {
   //       backgroundColor: Colors.red,
   //       textColor: Colors.yellow);
   // }
+
+  void updateArticles() {
+    setState(() {
+      page++;
+      futureNews = getNews.fetchNews(category, country, apiKey, page, pageSize);
+      futureResult();
+    });
+  }
 }
 
 class NewsElement extends StatelessWidget {

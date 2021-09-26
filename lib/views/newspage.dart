@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:newsapp/models/news.dart';
 import 'package:newsapp/utils/constants.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
+// ignore: must_be_immutable
 class NewsPage extends StatelessWidget {
-  const NewsPage({
+  NewsPage({
     Key? key,
     required this.articles,
     required this.index,
@@ -13,6 +15,7 @@ class NewsPage extends StatelessWidget {
 
   final List<Articles> articles;
   final int index;
+  var bottomValue = 20.0;
 
   @override
   Widget build(BuildContext context) {
@@ -136,13 +139,20 @@ class NewsPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 20,
+          bottom: bottomValue,
           left: 165,
-          child: GestureDetector(
-            onTap: () {
-              // print("Tapped");
+          child: Draggable(
+            childWhenDragging:const Text(""),
+            axis: Axis.vertical,
+            // affinity: Axis.vertical,
+            onDragEnd: (value) {
             },
             child: Icon(
+              CupertinoIcons.arrow_up_to_line,
+              color: colorBrown,
+              size: 50,
+            ),
+            feedback: Icon(
               CupertinoIcons.arrow_up_to_line,
               color: colorTeal,
               size: 50,

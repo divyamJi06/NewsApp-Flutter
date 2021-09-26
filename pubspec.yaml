@@ -28,6 +28,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   # fluttertoast:
+  # url_launcher: ^6.0.12
   flutter_dotenv: ^5.0.2
   dio: ^4.0.0
   http:
