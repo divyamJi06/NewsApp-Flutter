@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:newsapp/models/news.dart';
 import 'package:newsapp/utils/constants.dart';
-// import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class NewsPage extends StatelessWidget {
@@ -22,7 +22,7 @@ class NewsPage extends StatelessWidget {
     var currentArticle = articles[index];
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentArticle.source.name),
+        title: Text(checkForEmpty(currentArticle.source.name)),
         leading: GestureDetector(
           child: const Icon(
             Icons.arrow_back,
@@ -67,7 +67,7 @@ class NewsPage extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        currentArticle.title,
+                        checkForEmpty(currentArticle.title),
                         style: const TextStyle(
                           color: colorText,
                           fontWeight: FontWeight.w800,
@@ -85,7 +85,7 @@ class NewsPage extends StatelessWidget {
                                 color: colorText, fontWeight: FontWeight.w900),
                           ),
                           Text(
-                            currentArticle.publishedAt,
+                            checkForEmpty(currentArticle.publishedAt),
                             style: const TextStyle(
                               color: colorText,
                             ),
@@ -95,12 +95,12 @@ class NewsPage extends StatelessWidget {
                       Row(
                         children: [
                           const Text(
-                            "Source : ",
+                            "Written By : ",
                             style: TextStyle(
                                 color: colorText, fontWeight: FontWeight.w900),
                           ),
                           Text(
-                            "By " + currentArticle.author!,
+                            checkForEmpty(currentArticle.author!),
                             style: const TextStyle(color: colorText),
                           ),
                         ],
@@ -111,7 +111,7 @@ class NewsPage extends StatelessWidget {
                       ),
 
                       Text(
-                        currentArticle.description,
+                        checkForEmpty(currentArticle.description),
                         style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             color: colorText,
@@ -121,7 +121,7 @@ class NewsPage extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        filter(currentArticle.content!),
+                        checkForEmpty(filter(currentArticle.content!)),
                         style: const TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 15,
@@ -142,10 +142,17 @@ class NewsPage extends StatelessWidget {
           bottom: bottomValue,
           left: 165,
           child: Draggable(
-            childWhenDragging:const Text(""),
+            childWhenDragging: const Text(""),
             axis: Axis.vertical,
             // affinity: Axis.vertical,
             onDragEnd: (value) {
+              // print(value);
+              if (currentArticle.url != "Empty") {
+                _launchURL(currentArticle.url);
+              } else {
+                // print("No url to go");
+                // Add a toast or pop up type to show that could not go to url
+              }
             },
             child: Icon(
               CupertinoIcons.arrow_up_to_line,
@@ -161,6 +168,22 @@ class NewsPage extends StatelessWidget {
         )
       ]),
     );
+  }
+
+  String checkForEmpty(String content) {
+    if (content == "Empty") {
+      return "No Data is Available for this news";
+    }
+    return content;
+  }
+
+  void _launchURL(url) async {
+    // await canLaunch(url) ? await launch(url) : throw 'Could not launch $_url';
+    try {
+      await launch(url, forceSafariVC: true, forceWebView: true);
+    } catch (e) {
+      // print(e);
+    }
   }
 
   String filter(String content) {

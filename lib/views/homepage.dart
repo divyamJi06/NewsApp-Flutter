@@ -10,6 +10,8 @@ import '../models/news.dart';
 import '../strings/strings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'news_element.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -29,7 +31,6 @@ class _MyHomePageState extends State<MyHomePage> {
   var totalResults = 0;
   var pageSize = 20;
   String country = "in";
-  String link = "Read More";
   List<String> categories = [
     "general",
     "business",
@@ -81,8 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // ignore: prefer_const_constructors
-        title: Text(languageIn.appHome),
+        title: Text(
+          languageIn.appHome,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(6.0),
           child: LinearProgressIndicator(
@@ -93,50 +96,78 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
 
         actions: [
-          DropdownButton<String>(
-            value: category,
-            onChanged: (var newValue) {
-              // showToast();
-              setState(() {
-                articles = [];
-                page = 1;
-                category = newValue!;
-                futureNews = getNews.fetchNews(
-                    category, country, apiKey, page, pageSize);
+          const Icon(Icons.search),
+          Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                color: colorBlack, borderRadius: BorderRadius.circular(12)),
+            child: DropdownButton<String>(
+              dropdownColor: (Colors.black),
+              style: const TextStyle(color: colorText),
+              borderRadius: BorderRadius.circular(12),
+              value: category,
+              onChanged: (var newValue) {
+                // showToast();
+                setState(() {
+                  articles = [];
+                  page = 1;
+                  category = newValue!;
+                  futureNews = getNews.fetchNews(
+                      category, country, apiKey, page, pageSize);
 
-                futureResult();
-              });
-            },
-            items: categories.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value[0].toUpperCase() + value.substring(1)),
-              );
-            }).toList(),
+                  futureResult();
+                });
+              },
+              items: categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value[0].toUpperCase() + value.substring(1)),
+                );
+              }).toList(),
+            ),
           ),
-          DropdownButton<String>(
-            value: country,
-            onChanged: (var newValue) {
-              setState(() {
-                country = newValue!;
-                page = 1;
-                articles = [];
-                futureNews = getNews.fetchNews(
-                    category, country, apiKey, page, pageSize);
-                futureResult();
-              });
-            },
-            items: countriesName.keys
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: countriesName[value],
-                child: Text(value),
-              );
-            }).toList(),
+          Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                color: colorBlack, borderRadius: BorderRadius.circular(12)),
+            child: DropdownButton<String>(
+              dropdownColor: (Colors.black),
+              style: const TextStyle(color: colorText),
+              borderRadius: BorderRadius.circular(12),
+              value: country,
+              onChanged: (var newValue) {
+                setState(() {
+                  country = newValue!;
+                  page = 1;
+                  articles = [];
+                  futureNews = getNews.fetchNews(
+                      category, country, apiKey, page, pageSize);
+                  futureResult();
+                });
+              },
+              items: countriesName.keys
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: countriesName[value],
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
           )
         ],
       ),
-      body: futureResult(),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              futureResult(),
+            ],
+          ),
+        ),
+      ),
       backgroundColor: colorBrown,
     );
   }
@@ -149,17 +180,16 @@ class _MyHomePageState extends State<MyHomePage> {
           totalResults = snapshot.data!.totalResults;
           return listTypeView(snapshot.data!.articles);
         } else if (snapshot.hasError) {
-          return const Center(
-              child: Padding(
+          return const Padding(
             padding: EdgeInsets.all(18.0),
             child: Text(
               "Could Not get data from server , Please check your Internet Connection",
               style: TextStyle(
                   color: colorText, fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          ));
+          );
         }
-        return const Center(child: CircularProgressIndicator());
+        return const CircularProgressIndicator();
       },
     );
   }
@@ -167,26 +197,28 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget listTypeView(var newsList) {
     // articles.addAll(newsList);
     articles = newsList;
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: articles.length,
-      itemBuilder: (context, index) {
-        return Card(
-            color: colorBlack,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return NewsPage(
-                    articles: articles,
-                    index: index,
-                  );
-                }));
-              },
-              child: NewsElement(
-                  imageUrl: articles[index].urlToImage,
-                  title: articles[index].title),
-            ));
-      },
+    return Expanded(
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: articles.length,
+        itemBuilder: (context, index) {
+          return Card(
+              color: colorBlack,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return NewsPage(
+                      articles: articles,
+                      index: index,
+                    );
+                  }));
+                },
+                child: NewsElement(
+                    imageUrl: articles[index].urlToImage,
+                    title: articles[index].title),
+              ));
+        },
+      ),
     );
   }
 
@@ -207,64 +239,5 @@ class _MyHomePageState extends State<MyHomePage> {
       futureNews = getNews.fetchNews(category, country, apiKey, page, pageSize);
       futureResult();
     });
-  }
-}
-
-class NewsElement extends StatelessWidget {
-  const NewsElement({Key? key, required this.imageUrl, required this.title})
-      : super(key: key);
-
-  final String imageUrl;
-  final String title;
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 10,
-      height: 100,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: imageUrl == "Empty"
-                ? imageFromAssets("./assets/images/image_not_found.png")
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      imageUrl,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return imageFromAssets(
-                            "./assets/images/image_loader.gif");
-                      },
-                      fit: BoxFit.fill,
-                      height: 70,
-                      width: 100,
-                    ),
-                  ),
-          ),
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                  color: colorText, fontWeight: FontWeight.bold),
-            ),
-          ))
-        ],
-      ),
-    );
-  }
-
-  Widget imageFromAssets(String source) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Image.asset(
-        source,
-        fit: BoxFit.fill,
-        height: 70,
-        width: 100,
-      ),
-    );
   }
 }

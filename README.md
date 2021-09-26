@@ -7,10 +7,10 @@
 ### 5 Add Toast and make Circular Progress Bar better - DONE
 ### 6 Hide my apikey - DONE
 ### 7 Infinite Scrolling for news - HALF DONE
-### 8 Add a Search Bar
+### 8 Add a Search Bar - HALF DONE
 ### 9 Add Hero to Image
 ### 10 Upgrade the AppBar in both pages
-### 11 Make a custom dropdownlist for countries and categories
+### 11 Make a custom dropdownlist for countries and categories - DONE
 ### 12 Add custom_refresh_indicator to customised App Bar instead of Linear Progress Bar
 
 
