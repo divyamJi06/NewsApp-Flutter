@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import './views/homepage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import './strings/strings.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");

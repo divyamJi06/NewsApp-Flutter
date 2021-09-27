@@ -19,4 +19,5 @@ class GetNews {
       throw Exception('Failed to load news');
     }
   }
+  
 }

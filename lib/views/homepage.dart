@@ -1,16 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:newsapp/controllers/news_controller.dart';
 import 'package:newsapp/utils/constants.dart';
+import 'package:newsapp/views/news_element.dart';
 import 'package:newsapp/views/newspage.dart';
 import '../models/news.dart';
 import '../strings/strings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import 'news_element.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -82,9 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          languageIn.appHome,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        title: Container(
+          padding: EdgeInsets.only(top: 5),
+          child: Text(
+            languageIn.appHome,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(6.0),
@@ -94,12 +92,18 @@ class _MyHomePageState extends State<MyHomePage> {
             value: 0.5,
           ),
         ),
-
         actions: [
-          const Icon(Icons.search),
+          // IconButton(
+          //     icon: const Icon(Icons.search),
+          //     onPressed: () {
+          //       print("S");
+          //       futureNews = getNews.fetchNewsWithQuery(
+          //           category, country, apiKey, page, pageSize, "Alia");
+          //       futureResult();
+          //     }),
           Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.all(5),
+            padding: const EdgeInsets.only(left: 12),
+            margin: const EdgeInsets.only(top: 5, bottom: 5, right: 5),
             decoration: BoxDecoration(
                 color: colorBlack, borderRadius: BorderRadius.circular(12)),
             child: DropdownButton<String>(
@@ -128,8 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.all(5),
+            margin: const EdgeInsets.only(top: 5, bottom: 5, right: 5),
+            padding: const EdgeInsets.only(left: 12),
             decoration: BoxDecoration(
                 color: colorBlack, borderRadius: BorderRadius.circular(12)),
             child: DropdownButton<String>(
@@ -189,7 +193,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         }
-        return const CircularProgressIndicator();
+        return CircularProgressIndicator(
+          color: colorBlack,
+        );
       },
     );
   }
@@ -199,6 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
     articles = newsList;
     return Expanded(
       child: ListView.builder(
+        physics: BouncingScrollPhysics(),
         controller: _scrollController,
         itemCount: articles.length,
         itemBuilder: (context, index) {
@@ -233,7 +240,14 @@ class _MyHomePageState extends State<MyHomePage> {
   //       textColor: Colors.yellow);
   // }
 
-  void updateArticles() {
+  void updateArticles() async {
+    // _scrollController.animateTo(0,
+    //     duration: Duration(seconds: 2), curve: Curves.bounceIn);
+    // await Future.delayed(const Duration(milliseconds: 300));
+    // SchedulerBinding.instance?.addPostFrameCallback((_) {
+    //   _scrollController.jumpTo(0);
+    // });
+    // _scrollController.jumpTo(0);
     setState(() {
       page++;
       futureNews = getNews.fetchNews(category, country, apiKey, page, pageSize);
