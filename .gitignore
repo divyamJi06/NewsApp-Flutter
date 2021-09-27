@@ -48,6 +48,6 @@ app.*.map.json
 
 # Personal 
 # *auth/secret.json
+# assets/
 *.env
-assets/
 myReadMe.txt
