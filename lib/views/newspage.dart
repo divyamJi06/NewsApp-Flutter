@@ -100,7 +100,7 @@ class NewsPage extends StatelessWidget {
                                 color: colorText, fontWeight: FontWeight.w900),
                           ),
                           Text(
-                            checkForEmpty(currentArticle.author!),
+                            checkForEmpty(currentArticle.author),
                             style: const TextStyle(color: colorText),
                           ),
                         ],
@@ -121,7 +121,7 @@ class NewsPage extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        checkForEmpty(filter(currentArticle.content!)),
+                        checkForEmpty(filter(currentArticle.content)),
                         style: const TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 15,

@@ -17,9 +17,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late Future<News> futureNews;
-  List<Articles> articles = [];
+  List<Articles> articles = List.empty(growable: true);
   // ignore: prefer_typing_uninitialized_variables
   late var apiKey;
+  var moreNewsAvailable = true;
   String category = "sports";
   var page = 1;
   var pageUpdate = 1;
@@ -60,18 +61,27 @@ class _MyHomePageState extends State<MyHomePage> {
         if (_scrollController.position.pixels == 0) {
         } else {
           if (page * pageSize < totalResults) {
+            print("End of page $page reached");
             updateArticles();
+          } else {
+            moreNewsAvailable = false;
           }
         }
       }
     });
   }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _scrollController.dispose();
-  // }
+  void updateArticles() async {
+    setState(() {
+      page++;
+      futureNews = getNews.fetchNews(category, country, apiKey, page, pageSize);
+      futureResult();
+    });
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +219,10 @@ class _MyHomePageState extends State<MyHomePage> {
         controller: _scrollController,
         itemCount: articles.length,
         itemBuilder: (context, index) {
+          if (index == articles.length - 1 && moreNewsAvailable)
+            return Center(child: CircularProgressIndicator(
+              color:colorBlack
+            ));
           return Card(
               color: colorBlack,
               child: GestureDetector(
@@ -240,18 +254,5 @@ class _MyHomePageState extends State<MyHomePage> {
   //       textColor: Colors.yellow);
   // }
 
-  void updateArticles() async {
-    // _scrollController.animateTo(0,
-    //     duration: Duration(seconds: 2), curve: Curves.bounceIn);
-    // await Future.delayed(const Duration(milliseconds: 300));
-    // SchedulerBinding.instance?.addPostFrameCallback((_) {
-    //   _scrollController.jumpTo(0);
-    // });
-    // _scrollController.jumpTo(0);
-    setState(() {
-      page++;
-      futureNews = getNews.fetchNews(category, country, apiKey, page, pageSize);
-      futureResult();
-    });
-  }
+  
 }
